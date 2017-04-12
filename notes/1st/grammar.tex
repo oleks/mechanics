@@ -6,6 +6,9 @@
 \nont{Prog}   &::=& \nont{Dec}^* \nont{Expr} \\
 \nont{Dec}    &::=& \term{let} \nont{Name} \nont{Params}
                     \term{=} \nont{Expr} \term{;} \\
+\end{array}\]
+
+\[\begin{array}{rclr}
 \nont{Expr}   &::=& \nont{Name} \\
 \nont{Expr}   & | & \nont{Name} \nont{Args} \\
 \nont{Expr}   & | & \nont{Expr} \term{+} \nont{Expr} \\
