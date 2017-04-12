@@ -1,0 +1,8 @@
+Differential Geometry??
+Operational Calculus
+Differential Lambda Calculus
+Tensor Series
+
+---
+
+Embedded differentiation operator vs. mere analysis method

@@ -1,0 +1,27 @@
+\section{Grammar}
+
+\label{section:grammar}
+
+\[\begin{array}{rclr}
+\nont{Prog}   &::=& \nont{Dec}^* \nont{Expr} \\
+\nont{Dec}    &::=& \term{let} \nont{Name} \nont{Params}
+                    \term{=} \nont{Expr} \term{;} \\
+\nont{Expr}   &::=& \nont{Name} \\
+\nont{Expr}   & | & \nont{Name} \nont{Args} \\
+\nont{Expr}   & | & \nont{Expr} \term{+} \nont{Expr} \\
+\nont{Expr}   & | & \nont{Expr} \term{-} \nont{Expr} \\
+\nont{Expr}   & | & \nont{Expr} \term{*} \nont{Expr} \\
+\nont{Expr}   & | & \nont{Expr} \term{/} \nont{Expr} \\
+\nont{Expr}   & | & \term{(} \nont{Expr} \term{)} \\
+\end{array}\]
+
+\begin{itemize}
+
+\item Reserved names: \texttt{let}, \texttt{ln}, \texttt{sin} and
+\texttt{cos}.
+
+\item \term{*} and \term{/} have precedence over \term{+} and \term{-}.
+
+\item \term{+}, \term{-}, \term{*}, and \term{/} are all left-associative.
+
+\end{itemize}
