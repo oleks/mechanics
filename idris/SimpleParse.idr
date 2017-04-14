@@ -3,8 +3,6 @@
 ||| Roughly based on
 ||| https://github.com/kfl/simpleparse/blob/master/SimpleParse.hs 
 |||
-||| See also https://github.com/oleks/Idris-SimpleParse
-|||
 ||| MIT License
 |||
 ||| Copyright (c) 2010-2017 Ken Friis Larsen
