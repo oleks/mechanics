@@ -31,21 +31,22 @@
 module SimpleParse
 
 %access export
+%default total
 
 data Parser a = P (List Char -> (List (a, List Char)))
 
-total private
+private
 bind' : Parser a -> (a -> Parser b) -> Parser b
 bind' (P ma) f = P ( \ s => do
   (a, s') <- ma s
   let (P mb) = f a
   mb s')
 
-total private
+private
 pure' : a -> Parser a
 pure' a = P (\s => [(a, s)])
 
-total private
+private
 void : Monad m => m a -> m ()
 void m = m >>= (\_ => pure ())
 
@@ -59,28 +60,23 @@ Applicative Parser where
 Monad Parser where
   (>>=) = bind'
 
-total
 get : Parser (List Char)
 get = P (\ cs => [(cs, cs)])
 
-total
 getc : Parser Char
 getc = P getc'
   where getc' : List Char -> (List (Char, List Char))
         getc' [] = []
         getc' (x::xs) = [(x, xs)]
 
-total
 reject : Parser a
 reject = P (\ _ => [])
 
-total
 char : Char -> Parser Char
 char c = do
   c' <- getc
   if c == c' then pure c else reject
 
-total
 string : String -> Parser String
 string s = map pack (string' (unpack s))
   where string' : (List Char) -> Parser (List Char)
@@ -90,17 +86,14 @@ string s = map pack (string' (unpack s))
           string' cs
           pure (c::cs)
 
-total
 chars : List Char -> Parser Char
 chars cs = do
   c <- getc
   if c `elem` cs then pure c else reject
 
-total
 wild : Parser ()
 wild = void getc
 
-total
 eof : Parser ()
 eof = do
   cs <- get
@@ -108,7 +101,6 @@ eof = do
     []  => pure ()
     _   => reject
 
-total
 nonempty : Parser (List a) -> Parser (List a)
 nonempty p = do
   as <- p
@@ -116,13 +108,11 @@ nonempty p = do
     [] => reject
     _ => pure as
 
-total
 satisfy : (Char -> Bool) -> Parser Char
 satisfy p = do
   c <- getc
   if p c then pure c else reject
 
-total
 parse : Parser a -> String -> (List (a, String))
 parse (P p) s =
   let rs = p (unpack s)
@@ -130,7 +120,6 @@ parse (P p) s =
       ss = map pack (map snd rs)
   in zip as ss
 
-total
 fullParse : Parser a -> String -> List a
 fullParse p s = map fst $ parse (p <* eof) s
 
@@ -156,26 +145,26 @@ infixl 2 <*>|
   pure (f a, cs'')
 
 mutual
+  partial
   some : Parser a -> Parser (List a)
   some p = map (::) p <*>| many p
 
+  partial
   many : Parser a -> Parser (List a)
   many p = some p <|> pure []
 
-total
 option : a -> Parser a -> Parser a
 option v p = p <|> pure v
 
-total
 choice : List (Parser a) -> Parser a
 choice [] = reject
 choice (p::ps) = p <|> choice ps
 
-total
 between : Parser open -> Parser close
            -> Parser a -> Parser a
 between open close p = (void $ open) *> p <* (void $ close)
 
+partial
 chainl1 : Parser a -> Parser (a -> a -> a) -> Parser a
 chainl1 p op = p >>= chainl1'
   where
@@ -184,6 +173,7 @@ chainl1 p op = p >>= chainl1'
       y <- p
       chainl1' (f x y)
 
+partial
 chainr1 : Parser a -> Parser (a -> a -> a) -> Parser a
 chainr1 p op = p >>= chainr1'
   where
@@ -193,13 +183,14 @@ chainr1 p op = p >>= chainr1'
       pure (f x y)
 
 mutual
+  partial
   sepBy : Parser a -> Parser sep -> Parser (List a)
   sepBy p sep = (p `sepBy1` sep) <|> pure []
 
+  partial
   sepBy1 : Parser a -> Parser sep -> Parser (List a)
   sepBy1 p sep = do {a <- p; as <- many (sep *> p); pure (a::as)}
 
-total
 munch : (Char -> Bool) -> Parser (List Char)
 munch p = do
     cs <- get
@@ -216,7 +207,6 @@ munch p = do
       else pure []
     scan _ = pure []
 
-total
 munch1 : (Char -> Bool) -> Parser (List Char)
 munch1 p = do
   cs <- munch p
@@ -224,18 +214,14 @@ munch1 p = do
     [] => reject
     _ => pure cs
 
-total
 spaces : Parser (List Char)
 spaces = munch isSpace
 
-total
 token : Parser a -> Parser a
 token p = spaces *> p
 
-total
 stoken : String -> Parser ()
 stoken = void . token . string
 
-total
 ctoken : Char -> Parser ()
 ctoken = void . token . char
