@@ -1,5 +1,6 @@
 ||| Roughly based on
 ||| https://github.com/kfl/simpleparse/blob/master/SimpleParse.hs 
+||| See also https://github.com/oleks/Idris-SimpleParse
 
 module SimpleParse
 
