@@ -4,34 +4,32 @@
 
 module SimpleParse
 
-export
+%access export
+
 data Parser a = P (List Char -> (List (a, List Char)))
 
-total
+total private
 bind' : Parser a -> (a -> Parser b) -> Parser b
 bind' (P ma) f = P ( \ s => do
   (a, s') <- ma s
   let (P mb) = f a
   mb s')
 
-total
+total private
 pure' : a -> Parser a
 pure' a = P (\s => [(a, s)])
 
-total
+total private
 void : Monad m => m a -> m ()
 void m = m >>= (\_ => pure ())
 
-export
 Functor Parser where
   map f m = bind' m (\a => pure' (f a))
 
-export
 Applicative Parser where
   pure = pure'
   pf <*> px = bind' pf (\f => bind' px (pure . f))
 
-export
 Monad Parser where
   (>>=) = bind'
 
@@ -46,17 +44,17 @@ getc = P getc'
         getc' [] = []
         getc' (x::xs) = [(x, xs)]
 
-total export
+total
 reject : Parser a
 reject = P (\ _ => [])
 
-total export
+total
 char : Char -> Parser Char
 char c = do
   c' <- getc
   if c == c' then pure c else reject
 
-total export
+total
 string : String -> Parser String
 string s = map pack (string' (unpack s))
   where string' : (List Char) -> Parser (List Char)
@@ -66,17 +64,17 @@ string s = map pack (string' (unpack s))
           string' cs
           pure (c::cs)
 
-total export
+total
 chars : List Char -> Parser Char
 chars cs = do
   c <- getc
   if c `elem` cs then pure c else reject
 
-total export
+total
 wild : Parser ()
 wild = void getc
 
-total export
+total
 eof : Parser ()
 eof = do
   cs <- get
@@ -84,7 +82,7 @@ eof = do
     []  => pure ()
     _   => reject
 
-total export
+total
 nonempty : Parser (List a) -> Parser (List a)
 nonempty p = do
   as <- p
@@ -92,13 +90,13 @@ nonempty p = do
     [] => reject
     _ => pure as
 
-total export
+total
 satisfy : (Char -> Bool) -> Parser Char
 satisfy p = do
   c <- getc
   if p c then pure c else reject
 
-total export
+total
 parse : Parser a -> String -> (List (a, String))
 parse (P p) s =
   let rs = p (unpack s)
@@ -106,18 +104,16 @@ parse (P p) s =
       ss = map pack (map snd rs)
   in zip as ss
 
-total export
+total
 fullParse : Parser a -> String -> List a
 fullParse p s = map fst $ parse (p <* eof) s
 
-export
 Alternative Parser where
   empty = reject
   (P p) <|> (P q) = P $ \cs => p cs <|> q cs
 
 infixl 2 <|>|
 
-export
 (<|>|) : Parser a -> Lazy (Parser a) -> Parser a
 (<|>|) (P p) l = P $ \cs =>
   case p cs of
@@ -126,7 +122,6 @@ export
 
 infixl 2 <*>|
 
-export
 (<*>|) : Parser (a -> b) -> Lazy (Parser a) -> Parser b
 (<*>|) (P p) l = P $ \cs => do
   (f, cs') <- p cs
@@ -135,33 +130,29 @@ export
   pure (f a, cs'')
 
 mutual
-  export
   some : Alternative f => f a -> f (List a)
   some p = [| p :: many p |]
 
-  export
   many : Alternative f => f a -> f (List a)
   many p = some p <|> pure []
 
-export
 many' : Parser a -> Parser (List a)
 many' p = ((pure (::) <*> p) <*>| many' p) <|> pure []
 
-total export
+total
 option : a -> Parser a -> Parser a
 option v p = p <|> pure v
 
-total export
+total
 choice : List (Parser a) -> Parser a
 choice [] = reject
 choice (p::ps) = p <|> choice ps
 
-total export
+total
 between : Parser open -> Parser close
            -> Parser a -> Parser a
 between open close p = (void $ open) *> p <* (void $ close)
 
-export
 chainl1 : Parser a -> Parser (a -> a -> a) -> Parser a
 chainl1 p op = p >>= chainl1'
   where
@@ -170,7 +161,6 @@ chainl1 p op = p >>= chainl1'
       y <- p
       chainl1' (f x y)
 
-export
 chainr1 : Parser a -> Parser (a -> a -> a) -> Parser a
 chainr1 p op = p >>= chainr1'
   where
@@ -180,15 +170,13 @@ chainr1 p op = p >>= chainr1'
       pure (f x y)
 
 mutual
-  export
   sepBy : Parser a -> Parser sep -> Parser (List a)
   sepBy p sep = (p `sepBy1` sep) <|> pure []
 
-  export
   sepBy1 : Parser a -> Parser sep -> Parser (List a)
   sepBy1 p sep = do {a <- p; as <- many (sep *> p); pure (a::as)}
 
-total export
+total
 munch : (Char -> Bool) -> Parser (List Char)
 munch p = do
     cs <- get
@@ -205,7 +193,7 @@ munch p = do
       else pure []
     scan _ = pure []
 
-total export
+total
 munch1 : (Char -> Bool) -> Parser (List Char)
 munch1 p = do
   cs <- munch p
@@ -213,18 +201,18 @@ munch1 p = do
     [] => reject
     _ => pure cs
 
-total export
+total
 spaces : Parser (List Char)
 spaces = munch isSpace
 
-total export
+total
 token : Parser a -> Parser a
 token p = spaces *> p
 
-total export
+total
 stoken : String -> Parser ()
 stoken = void . token . string
 
-total export
+total
 ctoken : Char -> Parser ()
 ctoken = void . token . char
