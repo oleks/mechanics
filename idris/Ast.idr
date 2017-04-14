@@ -2,6 +2,8 @@ module Ast
 
 import Data.Vect
 
+%access public export
+
 Name : Type
 Name = String
 
