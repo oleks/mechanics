@@ -130,14 +130,11 @@ infixl 2 <*>|
   pure (f a, cs'')
 
 mutual
-  some : Alternative f => f a -> f (List a)
-  some p = [| p :: many p |]
+  some : Parser a -> Parser (List a)
+  some p = map (::) p <*>| many p
 
-  many : Alternative f => f a -> f (List a)
+  many : Parser a -> Parser (List a)
   many p = some p <|> pure []
-
-many' : Parser a -> Parser (List a)
-many' p = ((pure (::) <*> p) <*>| many' p) <|> pure []
 
 total
 option : a -> Parser a -> Parser a
