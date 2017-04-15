@@ -1,12 +1,11 @@
 module Main
 
 import Ast
-import SimpleParse
-import Parser.Impl
+import Parser
 
 showExpr : String -> IO ()
 showExpr s = do
-  let [(r, _)] = parse (parseExpr <* eof) s
+  let [r] = fullParse parseExpr s
   printLn $ show $ r
 
 main : IO ()
