@@ -27,4 +27,16 @@ parseExpr0 : Parser Expr
 parseExpr0 = parseVal
 
 parseExpr1 : Parser Expr
-parseExpr1 = chainl1 parseExpr0 (char '+' *> pure ExpAdd)
+parseExpr1 = chainl1 parseExpr0 $ choice
+  [ char '*' *> pure ExpMul
+  , char '/' *> pure ExpDiv
+  ]
+
+parseExpr2 : Parser Expr
+parseExpr2 = chainl1 parseExpr1 $ choice
+  [ char '+' *> pure ExpAdd
+  , char '-' *> pure ExpSub
+  ]
+
+parseExpr : Parser Expr
+parseExpr = parseExpr2
