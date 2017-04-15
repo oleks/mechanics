@@ -4,7 +4,14 @@ import Ast
 import SimpleParse
 import Parser.Impl
 
+showExpr : String -> IO ()
+showExpr s = do
+  let [(r, _)] = parse (parseExpr <* eof) s
+  printLn $ show $ r
+
 main : IO ()
 main = do
-  let r = parse (parseExpr1 <* eof) "1+2"
-  printLn $ show $ r
+  showExpr "1+2+3"
+  showExpr "1*2*3"
+  showExpr "1+2*3"
+  showExpr "1*2+3"
