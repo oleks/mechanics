@@ -24,15 +24,19 @@ data Expr
   | ExpMul Expr Expr
   | ExpDiv Expr Expr
 
+private
+parens : String -> String
+parens s = "( " ++ s ++ " )"
+
 Show Expr where
   show (ExpNam n) = show n
   show (ExpVal v) = show v
   show (FnCall n v) = show n ++ " " ++ show v
   show (ExpNeg e) = "-( " ++ show e ++ " )"
-  show (ExpAdd e1 e2) = show e1 ++ " + " ++ show e2
-  show (ExpSub e1 e2) = show e1 ++ " - " ++ show e2
-  show (ExpMul e1 e2) = show e1 ++ " * " ++ show e2
-  show (ExpDiv e1 e2) = show e1 ++ " / " ++ show e2
+  show (ExpAdd e1 e2) = parens $ show e1 ++ " + " ++ show e2
+  show (ExpSub e1 e2) = parens $ show e1 ++ " - " ++ show e2
+  show (ExpMul e1 e2) = parens $ show e1 ++ " * " ++ show e2
+  show (ExpDiv e1 e2) = parens $ show e1 ++ " / " ++ show e2
 
 data Clause : (len : Nat) -> Type where
   MkClause : Vect len Pattern -> Expr -> Clause len
