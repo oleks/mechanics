@@ -5,7 +5,8 @@ modules = Ast
         , Parser
         , Test.Parser
 
-tests = Test.Parser.testAddAssoc
+tests = Test.Parser.testZero
+      , Test.Parser.testAddAssoc
       , Test.Parser.testSubAssoc
       , Test.Parser.testMulAssoc
       , Test.Parser.testDivAssoc

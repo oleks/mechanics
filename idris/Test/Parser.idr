@@ -19,6 +19,12 @@ showExpr : String -> List Expr
 showExpr = fullParse parseExpr
 
 export
+testZero : IO ()
+testZero = assertEq "testZero"
+  (showExpr "0")
+  [ExpVal 0]
+
+export
 testAddAssoc : IO ()
 testAddAssoc = assertEq "testAddAssoc"
   (showExpr "1+2+3")
