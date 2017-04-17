@@ -29,15 +29,53 @@ private
 parens : String -> String
 parens s = "( " ++ s ++ " )"
 
-Show Expr where
-  show (ExpNam n) = show n
-  show (ExpVal v) = show v
-  show (FnCall n v) = show n ++ " " ++ show v
-  show (ExpNeg e) = "-( " ++ show e ++ " )"
-  show (ExpAdd e1 e2) = parens $ show e1 ++ " + " ++ show e2
-  show (ExpSub e1 e2) = parens $ show e1 ++ " - " ++ show e2
-  show (ExpMul e1 e2) = parens $ show e1 ++ " * " ++ show e2
-  show (ExpDiv e1 e2) = parens $ show e1 ++ " / " ++ show e2
+mutual
+  -- The Idris totality checker is missing a couple cases, so here is some
+  -- fairly verbose code to circumvent its limitations (for now).
+
+  private
+  showVect : Show a => Vect len a -> String
+  showVect = concat . intersperse " " . map show
+
+  private
+  showExpr : Expr -> String
+  showExpr (ExpNam n) = n
+  showExpr (ExpVal v) = show v
+  showExpr (FnCall n v) = n ++ " " ++ (showVect v)
+  showExpr (ExpNeg e) = "~" ++ (parens $ showExpr e)
+  showExpr (ExpAdd e1 e2) = parens $ showExpr e1 ++ " + " ++ showExpr e2
+  showExpr (ExpSub e1 e2) = parens $ showExpr e1 ++ " - " ++ showExpr e2
+  showExpr (ExpMul e1 e2) = parens $ showExpr e1 ++ " * " ++ showExpr e2
+  showExpr (ExpDiv e1 e2) = parens $ showExpr e1 ++ " / " ++ showExpr e2
+
+  Show Expr where
+    show = showExpr
+
+mutual
+  -- The Idris totality checker is missing a couple cases, so here is some
+  -- fairly verbose code to circumvent its limitations (for now).
+
+  private
+  eqVect : Vect n Expr -> Vect m Expr -> Bool
+  eqVect [] [] = True
+  eqVect [] _ = False
+  eqVect _ [] = False
+  eqVect (v::vs) (w::ws) = eqExpr v w && eqVect vs ws
+
+  private
+  eqExpr : Expr -> Expr -> Bool
+  eqExpr (ExpNam n) (ExpNam m) = n == m
+  eqExpr (ExpVal v) (ExpVal w) = v == w
+  eqExpr (FnCall n v) (FnCall m w) = n == m && eqVect v w
+  eqExpr (ExpNeg e) (ExpNeg f) = e == f
+  eqExpr (ExpAdd e1 e2) (ExpAdd f1 f2) = e1 == f1 && e2 == f2
+  eqExpr (ExpSub e1 e2) (ExpSub f1 f2) = e1 == f1 && e2 == f2
+  eqExpr (ExpMul e1 e2) (ExpMul f1 f2) = e1 == f1 && e2 == f2
+  eqExpr (ExpDiv e1 e2) (ExpDiv f1 f2) = e1 == f1 && e2 == f2
+  eqExpr _ _ = False
+
+  Eq Expr where
+    (==) = eqExpr
 
 data Clause : (len : Nat) -> Type where
   MkClause : Vect len Pattern -> Expr -> Clause len
