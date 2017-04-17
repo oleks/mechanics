@@ -9,3 +9,9 @@ tests = Test.Parser.testAddAssoc
       , Test.Parser.testSubAssoc
       , Test.Parser.testMulAssoc
       , Test.Parser.testDivAssoc
+      , Test.Parser.testPrecAddMul
+      , Test.Parser.testPrecMulAdd
+      , Test.Parser.testPrecAddSub
+      , Test.Parser.testPrecSubAdd
+      , Test.Parser.testPrecMulDiv
+      , Test.Parser.testPrecDivMul

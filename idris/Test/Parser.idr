@@ -41,3 +41,39 @@ testDivAssoc : IO ()
 testDivAssoc = assertEq "testSubAssoc"
   (showExpr "1/2/3")
   [ExpDiv (ExpDiv (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
+
+export
+testPrecAddMul : IO ()
+testPrecAddMul = assertEq "testPrecAddMul"
+  (showExpr "1+2*3")
+  [ExpAdd (ExpVal 1) (ExpMul (ExpVal 2) (ExpVal 3))]
+
+export
+testPrecMulAdd : IO ()
+testPrecMulAdd = assertEq "testPrecMulAdd"
+  (showExpr "1*2+3")
+  [ExpAdd (ExpMul (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
+
+export
+testPrecAddSub : IO ()
+testPrecAddSub = assertEq "testPrecAddSub"
+  (showExpr "1+2-3")
+  [ExpSub (ExpAdd (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
+
+export
+testPrecSubAdd : IO ()
+testPrecSubAdd = assertEq "testPrecSubAdd"
+  (showExpr "1-2+3")
+  [ExpAdd (ExpSub (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
+
+export
+testPrecMulDiv : IO ()
+testPrecMulDiv = assertEq "testPrecMulDiv"
+  (showExpr "1*2/3")
+  [ExpDiv (ExpMul (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
+
+export
+testPrecDivMul : IO ()
+testPrecDivMul = assertEq "testPrecDivMul"
+  (showExpr "1/2*3")
+  [ExpMul (ExpDiv (ExpVal 1) (ExpVal 2)) (ExpVal 3)]
