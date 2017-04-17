@@ -3,6 +3,7 @@ module Ast
 import Data.Vect
 
 %access public export
+%default total
 
 Name : Type
 Name = String
