@@ -1,0 +1,11 @@
+package mechanics
+
+modules = Ast
+        , Parser.Impl
+        , Parser
+        , Test.Parser
+
+tests = Test.Parser.testAddAssoc
+      , Test.Parser.testSubAssoc
+      , Test.Parser.testMulAssoc
+      , Test.Parser.testDivAssoc
