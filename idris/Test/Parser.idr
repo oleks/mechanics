@@ -25,6 +25,30 @@ testZero = assertEq "testZero"
   [ExpVal 0]
 
 export
+testName0 : IO ()
+testName0 = assertEq "testName0"
+  (showExpr "x")
+  [ExpNam "x"]
+
+export
+testName1 : IO ()
+testName1 = assertEq "testName1"
+  (showExpr "x0")
+  [ExpNam "x0"]
+
+export
+testName2 : IO ()
+testName2 = assertEq "testName2"
+  (showExpr "x0+x1")
+  [ExpAdd (ExpNam "x0") (ExpNam "x1")]
+
+export
+testName3 : IO ()
+testName3 = assertEq "testName3"
+  (showExpr "x0+x1+x2")
+  [ExpAdd (ExpNam "x0") (ExpAdd (ExpNam "x1") (ExpNam "x2"))]
+
+export
 testAddAssoc : IO ()
 testAddAssoc = assertEq "testAddAssoc"
   (showExpr "1+2+3")

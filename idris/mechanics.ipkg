@@ -6,6 +6,10 @@ modules = Ast
         , Test.Parser
 
 tests = Test.Parser.testZero
+      , Test.Parser.testName0
+      , Test.Parser.testName1
+      , Test.Parser.testName2
+      , Test.Parser.testName3
       , Test.Parser.testAddAssoc
       , Test.Parser.testSubAssoc
       , Test.Parser.testMulAssoc

@@ -23,8 +23,14 @@ parseVal = parseZero <|> parseNonZero
       let (i, _) = foldl step (0, 1) $ reverse (c::cs)
       pure $ ExpVal i
 
+parseNam : Parser Expr
+parseNam = do
+  c <- chars ['a'..'z']
+  cs <- munch $ flip elem $ ['a'..'z'] ++ ['0'..'9']
+  pure $ ExpNam $ pack $ c :: cs
+
 parseExpr0 : Parser Expr
-parseExpr0 = parseVal
+parseExpr0 = parseVal <|>| parseNam
 
 parseExpr1 : Parser Expr
 parseExpr1 = chainl1 parseExpr0 $ choice
