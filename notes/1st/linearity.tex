@@ -1,0 +1,64 @@
+\section{Linearity}
+
+\label{sec:linearity}
+
+\begin{definition}[Field]
+
+\cite{henglein2016autodiff} A \emph{field} $K$ is an algebraic structure $K =
+(|K|, +, 0, -, \cdot, ^{-1}, 1)$ such that for all $a, b, c \in |K|, d \in
+|K|\backslash\{0\}$:
+
+\[
+\begin{array}{|rcl|l|} \hline
+a + (b + c) & = & (a + b) + c & \text{semigroup}(+) \\
+a + 0 & = & a & \\
+0 + a & = & a & \text{monoid}(+) \\
+a + (-a) & = & 0 & \text{group}(+) \\
+a + b & = & b + a & \text{Abelian group}(+) \\
+a \cdot (b \cdot c) & = & (a \cdot b) \cdot c & \text{semigroup}(\cdot) \\
+a \cdot 1 & = & a & \\
+1 \cdot a & = & a & \text{monoid}(\cdot) \\
+a \cdot (b + c) & = & (a \cdot b) + (a \cdot c) & \\
+(a + b) \cdot c & = & (a \cdot c) + (b \cdot c) & ring \\
+a \cdot b & = & b \cdot a & \text{commutative ring} \\
+0 & \neq & 1 & \\
+d \cdot d^{-1} & = & 1 & \text{field} \\ \hline
+\end{array}
+\]
+\end{definition}
+
+As a shorthand, we write $a b$ for $a \cdot b$.
+
+\begin{definition}[Vector space]
+
+\cite{henglein2016autodiff} A \emph{vector space} $V$ over field $K$ is an
+algebraic structure $V = (|V|, +, 0, -, \cdot)$ such that for all $a, b \in
+|K|$, $u, v, w \in |V|$:
+
+\begin{eqnarray}
+u + (v + w) & = & (u + v) + w \\
+u + v & = & v + u \\
+u + 0 & = & u \\
+u + (-u) & = & 0 \\
+a \cdot (b \cdot u) & = & (a \cdot b) \cdot u \\
+1 \cdot u & = & u \\
+a \cdot (u + v) & = & (a \cdot u) + (a \cdot v) \\
+(a + b) \cdot u & = & (a \cdot u) + (b \cdot u) 
+\end{eqnarray}
+\end{definition}
+
+\begin{definition}[Linear map]
+
+A \emph{linear map} $f: V/K \rightarrow W/L$ from a vector space $V$ over a
+field $K$, to a vector space $W$ over a field $L$ is \emph{linear} if it
+preserves the operations of addition and scalar multiplication.
+
+That is, for all $\mathbf{x}, \mathbf{y} \in \card{V}$ and $\alpha \in
+\card{K}$, we have:
+
+\begin{align}
+f\p{\mathbf{x}+\mathbf{y}} &= f\p{\mathbf{x}} + f\p{\mathbf{y}}\\
+f\p{\alpha \mathbf{x}} &= \alpha f\p{\mathbf{x}}
+\end{align}
+
+\end{definition}

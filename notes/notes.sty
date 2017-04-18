@@ -277,6 +277,10 @@ fontsize=\footnotesize,
 \NewDocumentCommand\p{m}{%
   \mathWrap{(}{#1}{)}%
 }
+%
+\NewDocumentCommand\card{m}{%
+  \mathWrap{|}{#1}{|}%
+}
 %%%
 
 \RequirePackage{stmaryrd} % \llbracket \rrbracket
@@ -287,3 +291,8 @@ fontsize=\footnotesize,
   \mathWrap{\llbracket}{#1}{\rrbracket}%
 }
 %%%
+
+\theoremstyle{definition}
+\newtheorem{notion}{Notion}
+\newtheorem{example}{Example}
+\newtheorem{definition}{Definition}
