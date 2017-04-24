@@ -39,7 +39,7 @@ parseUncurried = parens . flip sepBy1 (char ',')
 
 mutual
   parseExpr0 : Parser Expr
-  parseExpr0 = parseVal <|>| parseVarCall
+  parseExpr0 = parseVal <|>| parseVarCall <|>| parens parseExpr
 
   parseExpr1 : Parser Expr
   parseExpr1 = chainl1 parseExpr0 $ choice
