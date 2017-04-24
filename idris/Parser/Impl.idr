@@ -3,6 +3,7 @@ module Parser.Impl
 import Ast
 import SimpleParse
 import Data.String
+import Data.Vect
 
 %access export
 
@@ -23,26 +24,48 @@ parseVal = parseZero <|> parseNonZero
       let (i, _) = foldl step (0, 1) $ reverse (c::cs)
       pure $ ExpVal i
 
-parseNam : Parser Expr
+parseNam : Parser Name
 parseNam = do
   c <- chars ['a'..'z']
   cs <- munch $ flip elem $ ['a'..'z'] ++ ['0'..'9']
-  pure $ ExpNam $ pack $ c :: cs
+  pure $ pack $ c :: cs
 
-parseExpr0 : Parser Expr
-parseExpr0 = parseVal <|>| parseNam
 
-parseExpr1 : Parser Expr
-parseExpr1 = chainl1 parseExpr0 $ choice
-  [ char '*' *> pure ExpMul
-  , char '/' *> pure ExpDiv
-  ]
+parens : Parser a -> Parser a
+parens = between (char '(') (char ')')
 
-parseExpr2 : Parser Expr
-parseExpr2 = chainl1 parseExpr1 $ choice
-  [ char '+' *> pure ExpAdd
-  , char '-' *> pure ExpSub
-  ]
+parseUncurried : Parser a -> Parser (List a)
+parseUncurried = parens . flip sepBy1 (char ',')
 
-parseExpr : Parser Expr
-parseExpr = parseExpr2
+mutual
+  parseExpr0 : Parser Expr
+  parseExpr0 = parseVal <|>| parseVarCall
+
+  parseExpr1 : Parser Expr
+  parseExpr1 = chainl1 parseExpr0 $ choice
+    [ char '*' *> pure ExpMul
+    , char '/' *> pure ExpDiv
+    ]
+
+  parseExpr2 : Parser Expr
+  parseExpr2 = chainl1 parseExpr1 $ choice
+    [ char '+' *> pure ExpAdd
+    , char '-' *> pure ExpSub
+    ]
+
+  parseArgs : Parser (List Expr)
+  parseArgs = parseUncurried parseExpr
+
+  parseExpr : Parser Expr
+  parseExpr = parseExpr2
+
+  parseCall : Name -> Parser Expr
+  parseCall name = do
+    args <- parseArgs
+    let vect = fromList args
+    pure $ FnCall name vect
+
+  parseVarCall : Parser Expr
+  parseVarCall = do
+    name <- parseNam
+    parseCall name <|>| (pure $ ExpNam name)
