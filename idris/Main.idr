@@ -2,9 +2,14 @@ module Main
 
 import Ast
 import Parser
+import Interp
 
-showExpr : String -> String
-showExpr s = let [r] = fullParse parseExpr s in show r
+interpStr : String -> String
+interpStr s =
+  case fullParse parseExpr s of
+    [] => "No parse"
+    [r] => show $ interp r
+    rs => "Ambiguous grammar: " ++ show rs
 
 repl' : String -> (String -> String) -> IO ()
 repl' prompt fn = do
@@ -17,4 +22,4 @@ repl' prompt fn = do
       repl' prompt fn
 
 main : IO ()
-main = repl' "> " showExpr
+main = repl' "> " interpStr
