@@ -11,16 +11,16 @@ data State
   = MkState (List (String, FunBody len))
 
 data InterpExp a
-  = MkInterpExp (State -> (a, State))
+  = MkInterpExp (State -> a)
 
 bind' : InterpExp a -> (a -> InterpExp b) -> InterpExp b
 bind' (MkInterpExp ma) f = MkInterpExp (\s =>
-  let (a, s') = ma s
+  let a = ma s
       (MkInterpExp mb) = f a
-  in mb s')
+  in mb s)
 
 pure' : a -> InterpExp a
-pure' a = MkInterpExp (\s => (a, s))
+pure' a = MkInterpExp (\s => a)
 
 Functor InterpExp where
   map f m = bind' m (\a => pure' (f a))
@@ -33,7 +33,7 @@ Monad InterpExp where
   (>>=) = bind'
 
 get : InterpExp State
-get = MkInterpExp (\s => (s, s))
+get = MkInterpExp (\s => s)
 
 mutual
   public export
