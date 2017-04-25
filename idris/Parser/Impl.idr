@@ -30,7 +30,6 @@ parseNam = do
   cs <- munch $ flip elem $ ['a'..'z'] ++ ['0'..'9']
   pure $ pack $ c :: cs
 
-
 parens : Parser a -> Parser a
 parens = between (char '(') (char ')')
 
