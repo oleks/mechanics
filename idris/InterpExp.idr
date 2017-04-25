@@ -1,58 +1,57 @@
-module Interp
+module InterpExp
 
 import Ast
 import Data.Vect
 import MonadExt
 
-%access public export
+%access private
 %default total
 
 data State
   = MkState (List (String, FunBody len))
 
-data Interp a
-  = MkInterp (State -> (a, State))
+data InterpExp a
+  = MkInterpExp (State -> (a, State))
 
-private
-bind' : Interp a -> (a -> Interp b) -> Interp b
-bind' (MkInterp ma) f = MkInterp (\s =>
+bind' : InterpExp a -> (a -> InterpExp b) -> InterpExp b
+bind' (MkInterpExp ma) f = MkInterpExp (\s =>
   let (a, s') = ma s
-      (MkInterp mb) = f a
+      (MkInterpExp mb) = f a
   in mb s')
 
-private
-pure' : a -> Interp a
-pure' a = MkInterp (\s => (a, s))
+pure' : a -> InterpExp a
+pure' a = MkInterpExp (\s => (a, s))
 
-
-Functor Interp where
+Functor InterpExp where
   map f m = bind' m (\a => pure' (f a))
 
-Applicative Interp where
+Applicative InterpExp where
   pure = pure'
   pf <*> px = bind' pf (\f => bind' px (pure . f))
 
-Monad Interp where
+Monad InterpExp where
   (>>=) = bind'
 
-get : Interp State
-get = MkInterp (\s => (s, s))
+get : InterpExp State
+get = MkInterpExp (\s => (s, s))
 
 mutual
+  public export
   add' : Int -> Expr -> Expr
   add' 0 e = e
   add' n e = ExpAdd (ExpVal n) e
 
+  public export
   mul' : Int -> Expr -> Expr
   mul' 0 e = e
   mul' 1 e = e
   mul' n e = ExpMul (ExpVal n) e
 
-  partial
-  baseInterp : (Expr -> Expr -> Expr) -> (Int -> Int -> Int)
+  partial public export
+  baseInterpExp : (Expr -> Expr -> Expr) -> (Int -> Int -> Int)
     -> (Int -> Expr -> Expr)
     -> Expr -> Expr -> Expr
-  baseInterp op fn fc e1 e2 =
+  baseInterpExp op fn fc e1 e2 =
     let
       v1 = interpExp e1
       v2 = interpExp e2
@@ -63,17 +62,17 @@ mutual
         (e1, ExpVal c) => fc c e1
         _ => op v1 v2
 
-  partial
+  partial public export
   interpExp : Expr -> Expr
   interpExp (FnCall "fst" [(ExpTup e1 _)]) = e1
   interpExp (FnCall "snd" [(ExpTup _ e2)]) = e2
   interpExp (FnCall "diff" [e1, e2]) =
     interpExp $ diff e1 e2
-  interpExp (ExpAdd e1 e2) = baseInterp ExpAdd (+) add' e1 e2
-  interpExp (ExpMul e1 e2) = baseInterp ExpMul (*) mul' e1 e2
+  interpExp (ExpAdd e1 e2) = baseInterpExp ExpAdd (+) add' e1 e2
+  interpExp (ExpMul e1 e2) = baseInterpExp ExpMul (*) mul' e1 e2
   interpExp v = v
 
-  partial
+  partial public export
   diff : Expr -> Expr -> Expr
   diff (ExpNam n) (ExpNam m) =
     if n == m then ExpVal 1 else ExpVal 0

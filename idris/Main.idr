@@ -2,7 +2,7 @@ module Main
 
 import Ast
 import Parser
-import Interp
+import InterpExp
 
 interpStr : String -> String
 interpStr s =
