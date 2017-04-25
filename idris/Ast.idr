@@ -83,5 +83,8 @@ mutual
 data Clause : (len : Nat) -> Type where
   MkClause : Vect len Pattern -> Expr -> Clause len
 
+FunBody : (len : Nat) -> Type
+FunBody len = List (Clause len)
+
 data FunDec : (len : Nat) -> Type where
-  MkFunDec : Name -> List (Clause len) -> FunDec len
+  MkFunDec : Name -> FunBody len -> FunDec len

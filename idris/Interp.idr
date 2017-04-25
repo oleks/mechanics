@@ -8,7 +8,7 @@ import MonadExt
 %default total
 
 data State
-  = MkState (List (String, Clause len))
+  = MkState (List (String, FunBody len))
 
 data Interp a
   = MkInterp (State -> (a, State))
