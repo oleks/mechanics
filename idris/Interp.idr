@@ -2,9 +2,41 @@ module Interp
 
 import Ast
 import Data.Vect
+import MonadExt
 
 %access public export
 %default total
+
+data State
+  = MkState (List (String, Clause len))
+
+data Interp a
+  = MkInterp (State -> (a, State))
+
+private
+bind' : Interp a -> (a -> Interp b) -> Interp b
+bind' (MkInterp ma) f = MkInterp (\s =>
+  let (a, s') = ma s
+      (MkInterp mb) = f a
+  in mb s')
+
+private
+pure' : a -> Interp a
+pure' a = MkInterp (\s => (a, s))
+
+
+Functor Interp where
+  map f m = bind' m (\a => pure' (f a))
+
+Applicative Interp where
+  pure = pure'
+  pf <*> px = bind' pf (\f => bind' px (pure . f))
+
+Monad Interp where
+  (>>=) = bind'
+
+get : Interp State
+get = MkInterp (\s => (s, s))
 
 mutual
   add' : Int -> Expr -> Expr
