@@ -33,6 +33,8 @@ mutual
 
   partial
   interp : Expr -> Expr
+  interp (FnCall "fst" [(ExpTup e1 _)]) = e1
+  interp (FnCall "snd" [(ExpTup _ e2)]) = e2
   interp (FnCall "diff" [e1, e2]) =
     interp $ diff e1 e2
   interp (ExpAdd e1 e2) = baseInterp ExpAdd (+) add' e1 e2

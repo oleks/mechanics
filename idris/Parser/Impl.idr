@@ -39,7 +39,10 @@ parseUncurried = parens . flip sepBy1 (char ',')
 
 mutual
   parseExpr0 : Parser Expr
-  parseExpr0 = parseVal <|>| parseVarCall <|>| parens parseExpr
+  parseExpr0 = parseVal <|>|
+                parseVarCall <|>|
+                parseTuple <|>|
+                parens parseExpr
 
   parseExpr1 : Parser Expr
   parseExpr1 = chainl1 parseExpr0 $ choice
@@ -69,3 +72,11 @@ mutual
   parseVarCall = do
     name <- parseNam
     parseCall name <|>| (pure $ ExpNam name)
+
+  parseTuple : Parser Expr
+  parseTuple = between (char '<') (char '>') $ do
+    e1 <- parseExpr
+    char ','
+    e2 <- parseExpr
+    pure $ ExpTup e1 e2
+

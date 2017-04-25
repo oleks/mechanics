@@ -20,6 +20,7 @@ data Expr
   | ExpVal Int
   | FnCall Name (Vect len Expr)
   | ExpNeg Expr
+  | ExpTup Expr Expr
   | ExpAdd Expr Expr
   | ExpSub Expr Expr
   | ExpMul Expr Expr
@@ -43,6 +44,7 @@ mutual
   showExpr (ExpVal v) = show v
   showExpr (FnCall n v) = n ++ " " ++ (showVect v)
   showExpr (ExpNeg e) = "~" ++ (parens $ showExpr e)
+  showExpr (ExpTup e1 e2) = "< " ++ showExpr e1 ++ ", " ++ showExpr e2 ++ " >"
   showExpr (ExpAdd e1 e2) = parens $ showExpr e1 ++ " + " ++ showExpr e2
   showExpr (ExpSub e1 e2) = parens $ showExpr e1 ++ " - " ++ showExpr e2
   showExpr (ExpMul e1 e2) = parens $ showExpr e1 ++ " * " ++ showExpr e2
@@ -68,6 +70,7 @@ mutual
   eqExpr (ExpVal v) (ExpVal w) = v == w
   eqExpr (FnCall n v) (FnCall m w) = n == m && eqVect v w
   eqExpr (ExpNeg e) (ExpNeg f) = e == f
+  eqExpr (ExpTup e1 e2) (ExpTup f1 f2) = e1 == f1 && e2 == f2
   eqExpr (ExpAdd e1 e2) (ExpAdd f1 f2) = e1 == f1 && e2 == f2
   eqExpr (ExpSub e1 e2) (ExpSub f1 f2) = e1 == f1 && e2 == f2
   eqExpr (ExpMul e1 e2) (ExpMul f1 f2) = e1 == f1 && e2 == f2
