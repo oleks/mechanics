@@ -8,7 +8,7 @@ interpStr : String -> String
 interpStr s =
   case fullParse parseExpr s of
     [] => "No parse"
-    [r] => show $ interp r
+    [r] => show $ interpExp r
     rs => "Ambiguous grammar: " ++ show rs
 
 repl' : String -> (String -> String) -> IO ()

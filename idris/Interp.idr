@@ -22,8 +22,8 @@ mutual
     -> Expr -> Expr -> Expr
   baseInterp op fn fc e1 e2 =
     let
-      v1 = interp e1
-      v2 = interp e2
+      v1 = interpExp e1
+      v2 = interpExp e2
     in
       case (v1, v2) of
         (ExpVal x, ExpVal y) => ExpVal $ fn x y
@@ -32,14 +32,14 @@ mutual
         _ => op v1 v2
 
   partial
-  interp : Expr -> Expr
-  interp (FnCall "fst" [(ExpTup e1 _)]) = e1
-  interp (FnCall "snd" [(ExpTup _ e2)]) = e2
-  interp (FnCall "diff" [e1, e2]) =
-    interp $ diff e1 e2
-  interp (ExpAdd e1 e2) = baseInterp ExpAdd (+) add' e1 e2
-  interp (ExpMul e1 e2) = baseInterp ExpMul (*) mul' e1 e2
-  interp v = v
+  interpExp : Expr -> Expr
+  interpExp (FnCall "fst" [(ExpTup e1 _)]) = e1
+  interpExp (FnCall "snd" [(ExpTup _ e2)]) = e2
+  interpExp (FnCall "diff" [e1, e2]) =
+    interpExp $ diff e1 e2
+  interpExp (ExpAdd e1 e2) = baseInterp ExpAdd (+) add' e1 e2
+  interpExp (ExpMul e1 e2) = baseInterp ExpMul (*) mul' e1 e2
+  interpExp v = v
 
   partial
   diff : Expr -> Expr -> Expr
@@ -48,10 +48,10 @@ mutual
   diff (ExpVal v) (ExpNam _) =
     ExpVal 0
   diff (ExpNeg e) ed =
-    interp $ ExpNeg (diff e ed)
+    interpExp $ ExpNeg (diff e ed)
   diff (ExpAdd e1 e2) ed =
-    interp $ ExpAdd (diff e1 ed) (diff e2 ed)
+    interpExp $ ExpAdd (diff e1 ed) (diff e2 ed)
   diff (ExpMul e1 e2) ed =
-    interp $ ExpAdd
+    interpExp $ ExpAdd
       (ExpMul e1 (diff e2 ed))
       (ExpMul (diff e1 ed) e2)
