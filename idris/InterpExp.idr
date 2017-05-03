@@ -3,12 +3,13 @@ module InterpExp
 import Ast
 import Data.Vect
 import MonadExt
+import Data.SortedMap
 
 %access public export
 %default total
 
 data State
-  = MkState (List (String, FunBody len))
+  = MkState (SortedMap String (m ** n ** FunBody m n))
 
 data InterpExp a
   = MkInterpExp (State -> a)
@@ -34,6 +35,11 @@ Monad InterpExp where
 
 get : InterpExp State
 get = MkInterpExp (\s => s)
+
+getFun : String -> InterpExp (Maybe (m ** n ** FunBody m n))
+getFun name = do
+  (MkState st) <- get
+  pure $ lookup name st
 
 mutual
   add' : Int -> Expr -> Expr
