@@ -11,6 +11,9 @@ import Data.SortedMap
 data State
   = MkState (SortedMap String (m ** n ** FunBody m n))
 
+initialState : State
+initialState = MkState empty
+
 data InterpExp a
   = MkInterpExp (State -> a)
 

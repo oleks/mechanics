@@ -5,15 +5,13 @@ import Parser
 import InterpExp
 
 import Data.Vect
-
-idFun : List (Clause 1)
-idFun = [MkClause [PatNam "x"] (ExpNam "x")]
+import Data.SortedMap
 
 interpStr : String -> String
 interpStr s =
   case fullParse parseExpr s of
     [] => "No parse"
-    [r] => show $ runInterpExp (MkState [("id", idFun)]) r
+    [r] => show $ runInterpExp initialState r
     rs => "Ambiguous grammar: " ++ show rs
 
 repl' : String -> (String -> String) -> IO ()
