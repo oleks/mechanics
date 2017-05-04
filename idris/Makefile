@@ -1,14 +1,15 @@
 .PHONY: all clean
 
+PKGS:=-p contrib
 IDR:=$(shell find -iname '*.idr')
 
 all: Main.bin
 
 %.bin: %.idr $(IDR) Makefile
-	idris -o $@ $<
+	idris $(PKGS) -o $@ $<
 
 %.ibc: %.idr Makefile
-	idris --check $<
+	idris $(PKGS) --check $<
 
 clean:
 	rm -f *.ibc
