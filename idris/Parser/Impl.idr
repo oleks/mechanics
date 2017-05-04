@@ -59,7 +59,7 @@ mutual
   parseArgs = parseUncurried parseExpr
 
   parseExpr : Parser Expr
-  parseExpr = parseExpr2
+  parseExpr = parseLet <|>| parseExpr2
 
   parseCall : Name -> Parser Expr
   parseCall name = do
@@ -79,3 +79,17 @@ mutual
     e2 <- parseExpr
     pure $ ExpTup e1 e2
 
+  parseLet : Parser Expr
+  parseLet = do
+    string "let"
+    char ' '
+    name <- parseNam
+    char ' '
+    char '='
+    char ' '
+    letexpr <- parseExpr
+    char ' '
+    string "in"
+    char ' '
+    inexpr <- parseExpr
+    pure $ ExpLet name letexpr inexpr

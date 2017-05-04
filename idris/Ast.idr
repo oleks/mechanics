@@ -25,6 +25,7 @@ data Expr
   | ExpSub Expr Expr
   | ExpMul Expr Expr
   | ExpDiv Expr Expr
+  | ExpLet Name Expr Expr
 
 private
 parens : String -> String
@@ -49,6 +50,8 @@ mutual
   showExpr (ExpSub e1 e2) = parens $ showExpr e1 ++ " - " ++ showExpr e2
   showExpr (ExpMul e1 e2) = parens $ showExpr e1 ++ " * " ++ showExpr e2
   showExpr (ExpDiv e1 e2) = parens $ showExpr e1 ++ " / " ++ showExpr e2
+  showExpr (ExpLet n e1 e2) =
+    "let " ++ n ++ " = " ++ (showExpr e1) ++ " in " ++ (showExpr e2)
 
   Show Expr where
     show = showExpr
@@ -75,6 +78,8 @@ mutual
   eqExpr (ExpSub e1 e2) (ExpSub f1 f2) = e1 == f1 && e2 == f2
   eqExpr (ExpMul e1 e2) (ExpMul f1 f2) = e1 == f1 && e2 == f2
   eqExpr (ExpDiv e1 e2) (ExpDiv f1 f2) = e1 == f1 && e2 == f2
+  eqExpr (ExpLet n e1 e2) (ExpLet m f1 f2)
+    = n == m && e1 == f1 && e2 == f2
   eqExpr _ _ = False
 
   Eq Expr where

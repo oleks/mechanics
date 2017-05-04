@@ -15,16 +15,16 @@ initialState : State
 initialState = MkState empty
 
 data InterpExp a
-  = MkInterpExp (State -> a)
+  = MkInterpExp (State -> Maybe a)
 
 bind' : InterpExp a -> (a -> InterpExp b) -> InterpExp b
-bind' (MkInterpExp ma) f = MkInterpExp (\s =>
-  let a = ma s
-      (MkInterpExp mb) = f a
-  in mb s)
+bind' (MkInterpExp ma) f = MkInterpExp (\s => do
+  a <- ma s
+  let (MkInterpExp mb) = f a
+  mb s)
 
 pure' : a -> InterpExp a
-pure' a = MkInterpExp (\s => a)
+pure' a = MkInterpExp (\s => Just a)
 
 Functor InterpExp where
   map f m = bind' m (\a => pure' (f a))
@@ -36,13 +36,26 @@ Applicative InterpExp where
 Monad InterpExp where
   (>>=) = bind'
 
+reject : InterpExp a
+reject = MkInterpExp (\s => Nothing)
+
 get : InterpExp State
-get = MkInterpExp (\s => s)
+get = MkInterpExp (\s => Just s)
+
+local : (State -> State) -> InterpExp a -> InterpExp a
+local f (MkInterpExp g) = MkInterpExp (\s => g (f s))
 
 getFun : String -> InterpExp (Maybe (m ** n ** FunBody m n))
 getFun name = do
   (MkState st) <- get
   pure $ lookup name st
+
+mkVar : Expr -> (m ** n ** (FunBody m n))
+mkVar expr = (1 ** 0 ** [MkClause [] expr])
+
+unpackVar : (m ** n ** (FunBody m n)) -> InterpExp Expr
+unpackVar ((S Z) ** Z ** [MkClause [] expr]) = pure expr
+unpackVar _ = reject
 
 mutual
   add' : Int -> Expr -> Expr
@@ -74,8 +87,14 @@ mutual
   interpExp (FnCall "diff" [e1, e2]) = do
     d <- diff e1 e2
     interpExp d
+  interpExp (ExpNam name) = do
+    Just v <- getFun name
+    unpackVar v
   interpExp (ExpAdd e1 e2) = baseInterpExp ExpAdd (+) add' e1 e2
   interpExp (ExpMul e1 e2) = baseInterpExp ExpMul (*) mul' e1 e2
+  interpExp (ExpLet n e1 e2) = do
+    v1 <- interpExp e1
+    local (\(MkState s) => MkState $ insert n (mkVar v1) s) (interpExp e2)
   interpExp v = pure $ v
 
   partial
@@ -98,9 +117,9 @@ mutual
       (ExpMul e1 d2)
       (ExpMul d1 e2)
 
-interp : InterpExp a -> State -> a
+interp : InterpExp a -> State -> Maybe a
 interp (MkInterpExp i) s = i s
 
 partial
-runInterpExp : State -> Expr -> Expr
+runInterpExp : State -> Expr -> Maybe Expr
 runInterpExp s e = interp (interpExp e) s
