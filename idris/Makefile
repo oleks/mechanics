@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-IDR=$(shell find -iname '*.idr')
+IDR:=$(shell find -iname '*.idr')
 
 all: Main.bin
 
