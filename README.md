@@ -3,8 +3,11 @@
 The primary entry-point for working with this apparatus are the `run-*.sh`
 shell scripts. These employ [Docker](https://www.docker.com) to run the
 [Haskell](run-haskell.sh) or [Idris](run-idris.sh) apparatus, respectively.
-This bears the benefits of (1) no install effort (other than to install Docker
-and run the shell script), and (2) a reproducible development environment.
+This bears the benefits of (1) a minimal-effort install, and (2) a reproducible
+development environment.
+
+To get started, install Docker, and run the respective shell script to start up
+a Docker image with the respective tools (GHC and/or Idris) installed.
 
 ## Gotcha's
 
