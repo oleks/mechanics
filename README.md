@@ -12,5 +12,5 @@ and run the shell script), and (2) a reproducible development environment.
 
 The Idris interpreter is lazy, while the Idris run-time is eager, unless
 specified otherwise. This makes the interpreter useless for the shotgun testing
-of run-time behaviour. Things that might terminate in the interpreter, do not
-necessarily terminate at run-time.
+of run-time behaviour. Things that terminate in the interpreter, might not
+terminate at run-time.
