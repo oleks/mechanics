@@ -9,4 +9,4 @@ docker run \
   --volume "${dir}/:/home/idris/mechanics/" \
   --workdir "/home/idris/mechanics/idris/" \
   --entrypoint "/bin/ash" \
-  oleks2/alpine-idris:1.0_0.4
+  oleks2/alpine-idris:1.0_0.5
