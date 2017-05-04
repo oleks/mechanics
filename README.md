@@ -1,8 +1,8 @@
 ## Reproduce my Build Environment, Reproduce my Results!
 
-The primary entry-point for working with this apparatus are the `run-*.sh`
-shell scripts. These employ [Docker](https://www.docker.com) to run the
-[Haskell](run-haskell.sh) or [Idris](run-idris.sh) apparatus, respectively.
+The primary entry-points for working with this apparatus are the respective
+`run-*.sh` shell scripts. These employ [Docker](https://www.docker.com) to run
+the [Haskell](run-haskell.sh) or [Idris](run-idris.sh) apparatus, respectively.
 This bears the benefits of (1) a minimal-effort install, and (2) a reproducible
 development environment.
 
