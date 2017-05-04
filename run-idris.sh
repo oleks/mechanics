@@ -10,4 +10,3 @@ docker run \
   --workdir "/home/idris/mechanics/idris/" \
   --entrypoint "/bin/ash" \
   oleks2/alpine-idris:1.0_0.4
-
