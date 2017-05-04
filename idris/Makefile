@@ -8,7 +8,7 @@ all: Main.bin
 %.bin: %.idr $(IDR) Makefile
 	idris $(PKGS) -o $@ $<
 
-%.ibc: %.idr Makefile
+%.ibc: %.idr $(IDR) Makefile
 	idris $(PKGS) --check $<
 
 clean:
