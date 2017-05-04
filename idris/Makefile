@@ -6,3 +6,5 @@ all: Main.bin
 
 %.bin: %.idr $(IDR) Makefile
 	idris -o $@ $<
+clean:
+	rm -f *.bin
