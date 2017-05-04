@@ -216,7 +216,7 @@ spaces : Parser (List Char)
 spaces = munch isSpace
 
 token : Parser a -> Parser a
-token p = spaces *> p
+token p = p <* spaces
 
 stoken : String -> Parser ()
 stoken = void . token . string
