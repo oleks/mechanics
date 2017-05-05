@@ -34,7 +34,7 @@ rules.
 ### Whitespace Rules
 
 * `let` is followed by at least one whitespace character.
-* `in` is on both preceded _and_ followed by at least one whitespace character.
+* `in` is both preceded _and_ followed by at least one whitespace character.
 
 ## Gotcha's
 
