@@ -91,6 +91,18 @@ d/dx let x = e1 in e2 ~> e3
 
 ```
 
+### `if`s
+
+`if`s are differentiation according to the following principles:
+
+1. If the derivatives of the branches unify, then the derivative of a branch is
+the unified derivative.
+
+2. Otherwise, the derivative of a branch is a branching derivative, with the
+original condition.
+
+Unification, for now, is trivial — it is mere equality.
+
 ## Gotcha's
 
 ### The Idris Interpreter is Lazy
