@@ -13,4 +13,4 @@ parse = SimpleParse.parse
 
 export
 fullParse : Parser.Parser a -> String -> List a
-fullParse = SimpleParse.fullParse
+fullParse p = SimpleParse.fullParse (spaces *> p <* spaces <* eof)

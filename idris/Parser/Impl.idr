@@ -8,7 +8,7 @@ import Data.Vect
 %access export
 
 parseVal : Parser Expr
-parseVal = parseZero <|> parseNonZero
+parseVal = token (parseZero <|> parseNonZero)
   where
     parseZero : Parser Expr
     parseZero = char '0' *> pure (ExpVal 0)
@@ -25,34 +25,33 @@ parseVal = parseZero <|> parseNonZero
       pure $ ExpVal i
 
 parseNam : Parser Name
-parseNam = do
+parseNam = token $ do
   c <- chars ['a'..'z']
   cs <- munch $ flip elem $ ['a'..'z'] ++ ['0'..'9']
   pure $ pack $ c :: cs
 
 parens : Parser a -> Parser a
-parens = between (char '(') (char ')')
+parens = between (stoken "(") (stoken ")")
 
 parseUncurried : Parser a -> Parser (List a)
-parseUncurried = parens . flip sepBy1 (char ',')
+parseUncurried = parens . flip sepBy1 (stoken ",")
 
 mutual
   parseExpr0 : Parser Expr
-  parseExpr0 = parseVal <|>|
-                parseVarCall <|>|
-                parseTuple <|>|
-                parens parseExpr
+  parseExpr0 = token (
+    parseVal <|>| parseVarCall <|>|
+    parseTuple <|>| parens parseExpr)
 
   parseExpr1 : Parser Expr
   parseExpr1 = chainl1 parseExpr0 $ choice
-    [ char '*' *> pure ExpMul
-    , char '/' *> pure ExpDiv
+    [ stoken "*" *> pure ExpMul
+    , stoken "/" *> pure ExpDiv
     ]
 
   parseExpr2 : Parser Expr
   parseExpr2 = chainl1 parseExpr1 $ choice
-    [ char '+' *> pure ExpAdd
-    , char '-' *> pure ExpSub
+    [ stoken "+" *> pure ExpAdd
+    , stoken "-" *> pure ExpSub
     ]
 
   parseArgs : Parser (List Expr)
@@ -73,23 +72,18 @@ mutual
     parseCall name <|>| (pure $ ExpNam name)
 
   parseTuple : Parser Expr
-  parseTuple = between (char '<') (char '>') $ do
+  parseTuple = between (stoken "<") (stoken ">") $ do
     e1 <- parseExpr
-    char ','
+    stoken ","
     e2 <- parseExpr
     pure $ ExpTup e1 e2
 
   parseLet : Parser Expr
   parseLet = do
-    string "let"
-    char ' '
+    stoken "let"
     name <- parseNam
-    char ' '
-    char '='
-    char ' '
+    stoken "="
     letexpr <- parseExpr
-    char ' '
-    string "in"
-    char ' '
+    stoken1 "in"
     inexpr <- parseExpr
     pure $ ExpLet name letexpr inexpr
