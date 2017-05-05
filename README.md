@@ -9,6 +9,14 @@ a reproducible development environment.
 To get started, install Docker, and run the respective shell script to start up
 a Docker image with the respective tools (GHC and/or Idris) installed.
 
+Currently, the [Haskell implementation](haskell) is (much) outdated. To play
+with the [Idris implementation](idris):
+
+```
+$ ./run-idris.sh
+~/mechanics/idris $ make && ./Main.bin
+```
+
 ## Grammar
 
 ```
