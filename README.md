@@ -9,6 +9,33 @@ a reproducible development environment.
 To get started, install Docker, and run the respective shell script to start up
 a Docker image with the respective tools (GHC and/or Idris) installed.
 
+## Grammar
+
+```
+Expr := Number
+      | VarName
+      | Expr `+` Expr
+      | Expr `-` Expr
+      | Expr `*` Expr
+      | Expr `/` Expr
+      | `let` VarName `=` Expr `in` Expr
+      | `(` Expr `)`
+```
+
+### Precedence and Associativity
+
+* `let` has the lowest precedence.
+* `+` and `-` are left-associative and have higher precedence than `let`.
+* `*` and `/` are left-associative and have higher precedence than `+` and `-`.
+
+As usual, parentheses can be used to override precedence and associativity
+rules.
+
+### Whitespace Rules
+
+* `let` is followed by at least one whitespace character.
+* `in` is on both preceded _and_ followed by at least one whitespace character.
+
 ## Gotcha's
 
 ### The Idris Interpreter is Lazy
