@@ -108,21 +108,21 @@ mutual
     pure $ ExpVal 0
   diff ed (ExpNeg e) = do
     d <- diff ed e
-    interpExp $ ExpNeg d
+    pure $ ExpNeg d
   diff ed (ExpAdd e1 e2) = do
     d1 <- diff ed e1
     d2 <- diff ed e2
-    interpExp $ ExpAdd d1 d2
+    pure $ ExpAdd d1 d2
   diff ed (ExpMul e1 e2) = do
     d1 <- diff ed e1
     d2 <- diff ed e2
-    interpExp $ ExpAdd
+    pure $ ExpAdd
       (ExpMul e1 d2)
       (ExpMul d1 e2)
   diff ed @ (ExpNam m) (ExpLet n e1 e2) = do
     d1 <- diff ed e1
     d2 <- diff (if n == m then (ExpNam "") else ed) e2
-    interpExp $ (ExpLet n d1 d2)
+    pure $ ExpLet n d1 d2
 
 interp : InterpExp a -> State -> Maybe a
 interp (MkInterpExp i) s = i s
