@@ -60,6 +60,25 @@ rules.
 * `in` is both preceded _and_ followed by at least one whitespace character.
 * All other tokens are separated by arbitrary whitespace.
 
+## Derivatives
+
+### `let`s
+
+```
+Jugement: d/dx e1 ~> e2
+
+Rules:
+
+    d/dx e2[e1/y] ~> e3
+--------------------------- (if x /= y)
+d/dx let y = e1 in e2 ~> e3
+
+    d/dy e2[e1/x] ~> e3
+--------------------------- (where y is fresh)
+d/dx let x = e1 in e2 ~> e3
+
+```
+
 ## Gotcha's
 
 ### The Idris Interpreter is Lazy
