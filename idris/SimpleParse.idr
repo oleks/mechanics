@@ -230,8 +230,20 @@ stoken = void . token . string
 stoken1 : String -> Parser ()
 stoken1 = void . token1 . string
 
+prefixToken : Parser a -> Parser a
+prefixToken p = p <* spaces1
+
+suffixToken : Parser a -> Parser a
+suffixToken p = spaces1 *> p
+
 isolatedToken : Parser a -> Parser a
-isolatedToken p = spaces1 *> p <* spaces1
+isolatedToken = prefixToken . suffixToken
 
 isolatedSToken : String -> Parser ()
 isolatedSToken = void . isolatedToken . string
+
+prefixSToken : String -> Parser ()
+prefixSToken = void . prefixToken . string
+
+suffixSToken : String -> Parser ()
+suffixSToken = void . suffixToken . string
