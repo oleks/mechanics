@@ -20,7 +20,22 @@ Expr := Number
       | Expr `/` Expr
       | `let` VarName `=` Expr `in` Expr
       | `(` Expr `)`
+      | FunName Args
+
+Args := `(` ArgList `)`
+
+ArgList :=
+         | NonEmptyArgList
+
+NonEmptyArgList := Expr
+                 | Expr `,` NonEmptyArgList
 ```
+
+### Built-in Functions
+
+The built-in functions are `fst`, `snd`, working on tuples, and `diff`, taking
+in an expression and a variable name, yielding the expression differentiated
+with respect to the given variable.
 
 ### Precedence and Associativity
 
