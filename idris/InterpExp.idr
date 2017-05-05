@@ -132,7 +132,13 @@ mutual
   diff ed @ (ExpNam m) (ExpIf ec et ef) = do
     dt <- diff ed et
     df <- diff ed ef
-    pure $ ExpIf ec dt df
+    pure $ case diffUnify dt df of
+      Just e => e
+      _ => ExpIf ec dt df
+
+  partial
+  diffUnify : Expr -> Expr -> Maybe Expr
+  diffUnify e1 e2 = if e1 == e2 then Just e1 else Nothing
 
 interp : InterpExp a -> State -> Maybe a
 interp (MkInterpExp i) s = i s
