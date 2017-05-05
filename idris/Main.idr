@@ -11,7 +11,7 @@ interpStr : String -> String
 interpStr s =
   case fullParse parseExpr s of
     [] => "No parse"
-    [r] => show $ runInterpExp initialState r
+    [r] => (show r) ++ "\n" ++ (show $ runInterpExp initialState r)
     rs => "Ambiguous grammar: " ++ show rs
 
 repl' : String -> (String -> String) -> IO ()
