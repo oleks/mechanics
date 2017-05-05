@@ -28,6 +28,7 @@ Expr := Number
       | Expr `/` Expr
       | `let` VarName `=` Expr `in` Expr
       | `(` Expr `)`
+      | `<` Expr `,` Expr `>`
       | FunName Args
 
 Args := `(` ArgList `)`
@@ -41,9 +42,19 @@ NonEmptyArgList := Expr
 
 ### Built-in Functions
 
-The built-in functions are `fst`, `snd`, working on tuples, and `diff`, taking
-in a variable name and an expression, yielding the expression differentiated
-with respect to the given variable name.
+The built-in functions are `fst`, `snd`, `dup`, and `diff`. `diff` takes a
+variable name and an expression, and yields the expression differentiated with
+respect to the given variable name. The other built-in functions work as
+follows:
+
+```
+> fst(<x,y>)
+Just x
+> snd(<x,y>)
+Just y
+> dup(x)
+Just < x, x >
+```
 
 ### Precedence and Associativity
 
