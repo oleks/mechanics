@@ -87,6 +87,7 @@ mutual
   interpExp : Expr -> InterpExp Expr
   interpExp (FnCall "fst" [(ExpTup e1 _)]) = pure e1
   interpExp (FnCall "snd" [(ExpTup _ e2)]) = pure e2
+  interpExp (FnCall "dup" [e]) = pure $ ExpTup e e
   interpExp (FnCall "diff" [e1, e2]) = do
     d <- diff e1 e2
     interpExp d
