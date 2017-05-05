@@ -42,13 +42,16 @@ reject = MkInterpExp (\s => Nothing)
 get : InterpExp State
 get = MkInterpExp (\s => Just s)
 
+liftMaybe : Maybe a -> InterpExp a
+liftMaybe v = MkInterpExp (\s => v)
+
 local : (State -> State) -> InterpExp a -> InterpExp a
 local f (MkInterpExp g) = MkInterpExp (\s => g (f s))
 
-getFun : String -> InterpExp (Maybe (m ** n ** FunBody m n))
+getFun : String -> InterpExp (m ** n ** FunBody m n)
 getFun name = do
   (MkState st) <- get
-  pure $ lookup name st
+  liftMaybe $ lookup name st
 
 mkVar : Expr -> (m ** n ** (FunBody m n))
 mkVar expr = (1 ** 0 ** [MkClause [] expr])
@@ -88,7 +91,7 @@ mutual
     d <- diff e1 e2
     interpExp d
   interpExp (ExpNam name) = do
-    Just v <- getFun name
+    v <- getFun name
     unpackVar v
   interpExp (ExpAdd e1 e2) = baseInterpExp ExpAdd (+) add' e1 e2
   interpExp (ExpMul e1 e2) = baseInterpExp ExpMul (*) mul' e1 e2
