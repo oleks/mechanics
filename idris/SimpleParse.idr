@@ -215,11 +215,17 @@ munch1 p = do
 spaces : Parser (List Char)
 spaces = munch isSpace
 
+spaces1 : Parser (List Char)
+spaces1 = munch1 isSpace
+
 token : Parser a -> Parser a
-token p = p <* spaces
+token = (*>) spaces
+
+token1 : Parser a -> Parser a
+token1 = (*>) spaces1
 
 stoken : String -> Parser ()
 stoken = void . token . string
 
-ctoken : Char -> Parser ()
-ctoken = void . token . char
+stoken1 : String -> Parser ()
+stoken1 = void . token1 . string
