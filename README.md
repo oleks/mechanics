@@ -42,8 +42,8 @@ NonEmptyArgList := Expr
 ### Built-in Functions
 
 The built-in functions are `fst`, `snd`, working on tuples, and `diff`, taking
-in an expression and a variable name, yielding the expression differentiated
-with respect to the given variable.
+in a variable name and an expression, yielding the expression differentiated
+with respect to the given variable name.
 
 ### Precedence and Associativity
 

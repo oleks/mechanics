@@ -104,24 +104,24 @@ mutual
   diff : Expr -> Expr -> InterpExp Expr
   diff (ExpNam n) (ExpNam m) =
     pure $ if n == m then ExpVal 1 else ExpVal 0
-  diff (ExpVal v) (ExpNam _) =
+  diff (ExpNam _) (ExpVal v) =
     pure $ ExpVal 0
-  diff (ExpNeg e) ed = do
-    d <- diff e ed
+  diff ed (ExpNeg e) = do
+    d <- diff ed e
     interpExp $ ExpNeg d
-  diff (ExpAdd e1 e2) ed = do
-    d1 <- diff e1 ed
-    d2 <- diff e2 ed
+  diff ed (ExpAdd e1 e2) = do
+    d1 <- diff ed e1
+    d2 <- diff ed e2
     interpExp $ ExpAdd d1 d2
-  diff (ExpMul e1 e2) ed = do
-    d1 <- diff e1 ed
-    d2 <- diff e2 ed
+  diff ed (ExpMul e1 e2) = do
+    d1 <- diff ed e1
+    d2 <- diff ed e2
     interpExp $ ExpAdd
       (ExpMul e1 d2)
       (ExpMul d1 e2)
-  diff (ExpLet n e1 e2) ed @ (ExpNam m) = do
-    d1 <- diff e1 ed
-    d2 <- diff e2 (if n == m then (ExpNam "") else ed)
+  diff ed @ (ExpNam m) (ExpLet n e1 e2) = do
+    d1 <- diff ed e1
+    d2 <- diff (if n == m then (ExpNam "") else ed) e2
     interpExp $ (ExpLet n d1 d2)
 
 interp : InterpExp a -> State -> Maybe a
