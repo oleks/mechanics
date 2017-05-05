@@ -50,6 +50,7 @@ rules.
 
 * `let` is followed by at least one whitespace character.
 * `in` is both preceded _and_ followed by at least one whitespace character.
+* All other tokens are separated by arbitrary whitespace.
 
 ## Gotcha's
 
