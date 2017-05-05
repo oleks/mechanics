@@ -38,13 +38,13 @@ mutual
 
   private
   showVect : Show a => Vect len a -> String
-  showVect = concat . intersperse " " . map show
+  showVect = concat . intersperse ", " . map show
 
   private
   showExpr : Expr -> String
   showExpr (ExpNam n) = n
   showExpr (ExpVal v) = show v
-  showExpr (FnCall n v) = n ++ " " ++ (showVect v)
+  showExpr (FnCall n v) = n ++ "( " ++ (showVect v) ++ " )"
   showExpr (ExpNeg e) = "~" ++ (parens $ showExpr e)
   showExpr (ExpTup e1 e2) = "< " ++ showExpr e1 ++ ", " ++ showExpr e2 ++ " >"
   showExpr (ExpAdd e1 e2) = parens $ showExpr e1 ++ " + " ++ showExpr e2
