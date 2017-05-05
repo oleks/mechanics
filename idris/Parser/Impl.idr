@@ -81,9 +81,10 @@ mutual
   parseLet : Parser Expr
   parseLet = do
     stoken "let"
+    spaces1
     name <- parseNam
     stoken "="
     letexpr <- parseExpr
-    stoken1 "in"
+    isolatedSToken "in"
     inexpr <- parseExpr
     pure $ ExpLet name letexpr inexpr

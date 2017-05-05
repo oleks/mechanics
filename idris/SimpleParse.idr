@@ -229,3 +229,9 @@ stoken = void . token . string
 
 stoken1 : String -> Parser ()
 stoken1 = void . token1 . string
+
+isolatedToken : Parser a -> Parser a
+isolatedToken p = spaces1 *> p <* spaces1
+
+isolatedSToken : String -> Parser ()
+isolatedSToken = void . isolatedToken . string
