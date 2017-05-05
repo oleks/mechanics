@@ -65,7 +65,7 @@ rules.
 ### `let`s
 
 ```
-Jugement: d/dx e1 ~> e2, where x \in VarName and e1, e2 \in Expr.
+Judgement: d/dx e1 ~> e2, where x \in VarName and e1, e2 \in Expr.
 
 Rules:
 
