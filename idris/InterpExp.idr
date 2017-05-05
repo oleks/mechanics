@@ -119,6 +119,10 @@ mutual
     interpExp $ ExpAdd
       (ExpMul e1 d2)
       (ExpMul d1 e2)
+  diff (ExpLet n e1 e2) ed @ (ExpNam m) = do
+    d1 <- diff e1 ed
+    d2 <- diff e2 (if n == m then (ExpNam "") else ed)
+    interpExp $ (ExpLet n d1 d2)
 
 interp : InterpExp a -> State -> Maybe a
 interp (MkInterpExp i) s = i s
