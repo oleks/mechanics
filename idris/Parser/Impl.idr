@@ -58,7 +58,7 @@ mutual
   parseArgs = parseUncurried parseExpr
 
   parseExpr : Parser Expr
-  parseExpr = parseLet <|>| parseExpr2
+  parseExpr = parseLet <|>| parseIf <|>| parseExpr2
 
   parseCall : Name -> Parser Expr
   parseCall name = do
@@ -80,11 +80,20 @@ mutual
 
   parseLet : Parser Expr
   parseLet = do
-    stoken "let"
-    spaces1
+    prefixSToken "let"
     name <- parseNam
     stoken "="
     letexpr <- parseExpr
     isolatedSToken "in"
     inexpr <- parseExpr
     pure $ ExpLet name letexpr inexpr
+
+  parseIf : Parser Expr
+  parseIf = do
+    prefixSToken "if"
+    ec <- parseExpr
+    isolatedSToken "then"
+    et <- parseExpr
+    isolatedSToken "else"
+    ef <- parseExpr
+    pure $ ExpIf ec et ef

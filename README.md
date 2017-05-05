@@ -27,6 +27,7 @@ Expr := Number
       | Expr `*` Expr
       | Expr `/` Expr
       | `let` VarName `=` Expr `in` Expr
+      | `if` Expr `then` Expr `else` Expr
       | `(` Expr `)`
       | `<` Expr `,` Expr `>`
       | FunName Args
@@ -58,8 +59,8 @@ Just < x, x >
 
 ### Precedence and Associativity
 
-* `let` has the lowest precedence.
-* `+` and `-` are left-associative and have higher precedence than `let`.
+* `let` and `if` have the lowest precedence.
+* `+` and `-` are left-associative and have higher precedence than `let` and `if`.
 * `*` and `/` are left-associative and have higher precedence than `+` and `-`.
 
 As usual, parentheses can be used to override precedence and associativity
@@ -67,8 +68,8 @@ rules.
 
 ### Whitespace Rules
 
-* `let` is followed by at least one whitespace character.
-* `in` is both preceded _and_ followed by at least one whitespace character.
+* `let` and `if` are followed by at least one whitespace character.
+* `in`, `then`, and `else` are surrounded by at least one whitespace character.
 * All other tokens are separated by arbitrary whitespace.
 
 ## Derivatives

@@ -99,6 +99,11 @@ mutual
   interpExp (ExpLet n e1 e2) = do
     v1 <- interpExp e1
     local (\(MkState s) => MkState $ insert n (mkVar v1) s) (interpExp e2)
+  interpExp (ExpIf ec et ef) = do
+    vc <- interpExp ec
+    case vc of
+      ExpVal 0 => interpExp ef
+      _ => interpExp et
   interpExp v = pure $ v
 
   partial
@@ -124,6 +129,10 @@ mutual
     d1 <- diff ed e1
     d2 <- diff (if n == m then (ExpNam "") else ed) e2
     pure $ ExpLet n d1 d2
+  diff ed @ (ExpNam m) (ExpIf ec et ef) = do
+    dt <- diff ed et
+    df <- diff ed ef
+    pure $ ExpIf ec dt df
 
 interp : InterpExp a -> State -> Maybe a
 interp (MkInterpExp i) s = i s
