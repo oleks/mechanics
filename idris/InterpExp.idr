@@ -145,6 +145,12 @@ mutual
     pure $ case diffUnify dt df of
       Just e => e
       _ => ExpIf ec dt df
+  diff ed @ (ExpNam m) (FnCall "sin" [e]) =do
+    de <- diff ed e
+    pure $ ExpMul (FnCall "cos" [e]) de
+  diff ed @ (ExpNam m) (FnCall "cos" [e]) =do
+    de <- diff ed e
+    pure $ ExpNeg $ ExpMul (FnCall "sin" [e]) de
 
   partial
   diffUnify : Expr -> Expr -> Maybe Expr
