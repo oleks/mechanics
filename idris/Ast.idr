@@ -17,7 +17,7 @@ data Pattern
 
 data Expr
   = ExpNam Name
-  | ExpVal Int
+  | ExpVal Value
   | FnCall Name (Vect len Expr)
   | ExpNeg Expr
   | ExpTup Expr Expr

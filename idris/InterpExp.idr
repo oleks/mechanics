@@ -61,18 +61,21 @@ unpackVar ((S Z) ** Z ** [MkClause [] expr]) = pure expr
 unpackVar _ = reject
 
 mutual
-  add' : Int -> Expr -> Expr
-  add' 0 e = e
-  add' n e = ExpAdd (ExpVal n) e
+  add' : Double -> Expr -> Expr
+  add' n e =
+    if n == 0.0
+    then e
+    else ExpAdd (ExpVal n) e
 
-  mul' : Int -> Expr -> Expr
-  mul' 0 e = e
-  mul' 1 e = e
-  mul' n e = ExpMul (ExpVal n) e
+  mul' : Double -> Expr -> Expr
+  mul' n e =
+    if n == 0.0 || n == 1.0
+    then e
+    else ExpMul (ExpVal n) e
 
   partial
-  baseInterpExp : (Expr -> Expr -> Expr) -> (Int -> Int -> Int)
-    -> (Int -> Expr -> Expr)
+  baseInterpExp : (Expr -> Expr -> Expr) -> (Double -> Double -> Double)
+    -> (Double -> Expr -> Expr)
     -> Expr -> Expr -> InterpExp Expr
   baseInterpExp op fn fc e1 e2 = do
     v1 <- interpExp e1
@@ -83,8 +86,16 @@ mutual
       (e1, ExpVal c) => fc c e1
       _ => op v1 v2
 
+  valInterpExp : (Double -> Double) -> Expr -> InterpExp Expr
+  valInterpExp f (ExpVal x) = pure $ ExpVal $ f x
+  valInterpExp _ _ = reject
+
   partial
   interpExp : Expr -> InterpExp Expr
+  interpExp (FnCall "sin" [e]) =
+    interpExp e >>= valInterpExp sin
+  interpExp (FnCall "cos" [e]) =
+    interpExp e >>= valInterpExp cos
   interpExp (FnCall "fst" [(ExpTup e1 _)]) = pure e1
   interpExp (FnCall "snd" [(ExpTup _ e2)]) = pure e2
   interpExp (FnCall "dup" [e]) = pure $ ExpTup e e
@@ -100,9 +111,9 @@ mutual
     local (\(MkState s) => MkState $ insert n (mkVar v1) s) (interpExp e2)
   interpExp (ExpIf ec et ef) = do
     vc <- interpExp ec
-    case vc of
-      ExpVal 0 => interpExp ef
-      _ => interpExp et
+    if vc == ExpVal 0.0
+    then interpExp ef
+    else interpExp et
   interpExp v = pure $ v
 
   partial

@@ -247,3 +247,7 @@ prefixSToken = void . prefixToken . string
 
 suffixSToken : String -> Parser ()
 suffixSToken = void . suffixToken . string
+
+liftMaybe : Maybe a -> Parser a
+liftMaybe (Just x) = pure x
+liftMaybe Nothing = reject

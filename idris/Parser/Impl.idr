@@ -20,9 +20,7 @@ parseVal = token (parseZero <|> parseNonZero)
     parseNonZero = do
       c <- chars ['1'..'9']
       cs <- munch $ flip elem ['0'..'9']
-      if length cs > 4 then reject else pure ()
-      let (i, _) = foldl step (0, 1) $ reverse (c::cs)
-      pure $ ExpVal i
+      map ExpVal $ liftMaybe $ parseDouble $ pack $ c::cs
 
 parseNam : Parser Name
 parseNam = token $ do
