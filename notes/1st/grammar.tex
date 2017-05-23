@@ -2,25 +2,61 @@
 
 \label{section:grammar}
 
+\subsection{Expressions}
+
+Let \nont{Expr} be an expression language having the following grammar:
+
+\[\begin{array}{rclr}
+\nont{Expr}     &::=& \nont{Value} \\
+                & | & \nont{Name} \nont{Args} \\
+                & | & \nont{Expr} \term{+} \nont{Expr} \\
+                & | & \nont{Expr} \term{-} \nont{Expr} \\
+                & | & \nont{Expr} \term{*} \nont{Expr} \\
+                & | & \nont{Expr} \term{/} \nont{Expr} \\
+                & | & \term{(} \nont{Expr} \term{)} \\
+                & | & \term{let} \nont{Name} \nont{Params}%
+                      \term{=} \nont{Expr} \term{in} \nont{Expr} \\
+\nont{Args}     &::=& \varepsilon \\
+                & | & \nont{Expr} \nont{Args} \\
+\nont{Paramss}  &::=& \varepsilon \\
+                & | & \nont{Name} \nont{Params}
+\end{array}\]
+
+Disambiguated further as follows:
+
+\begin{enumerate}
+
+\item A \nont{Value} matches the regular expression \verb%/0|[1-9][0-9]*/%.
+
+\item A \nont{Name} matches the regular expression
+\verb%/[a-zA-Z_][a-zA-Z0-9_]*/%, and is not one of the otherwise reserved
+names: \texttt{let} or \texttt{in}.
+
+\item Here are the operator precedences, in decreasing order:
+
+\begin{enumerate}
+
+\item \term{*} and \term{/}.
+
+\item \term{+} and \term{-}.
+
+\item \term{let} and function application.
+
+\end{enumerate}
+
+\item \term{+}, \term{-}, \term{*}, and \term{/} are all left-associative.
+
+\end{enumerate}
+
 \[\begin{array}{rclr}
 \nont{Prog}   &::=& \nont{Dec}^* \nont{Expr} \\
 \nont{Dec}    &::=& \term{let} \nont{Name} \nont{Params}
                     \term{=} \nont{Expr} \term{;} \\
 \end{array}\]
 
-\[\begin{array}{rclr}
-\nont{Expr}   &::=& \nont{Name} \\
-\nont{Expr}   & | & \nont{Name} \nont{Args} \\
-\nont{Expr}   & | & \nont{Expr} \term{+} \nont{Expr} \\
-\nont{Expr}   & | & \nont{Expr} \term{-} \nont{Expr} \\
-\nont{Expr}   & | & \nont{Expr} \term{*} \nont{Expr} \\
-\nont{Expr}   & | & \nont{Expr} \term{/} \nont{Expr} \\
-\nont{Expr}   & | & \term{(} \nont{Expr} \term{)} \\
-\end{array}\]
-
 \begin{itemize}
 
-\item Reserved names: \texttt{let}, \texttt{ln}, \texttt{sin} and
+\item Reserved names: \texttt{let}, \texttt{in}
 \texttt{cos}.
 
 \item \term{*} and \term{/} have precedence over \term{+} and \term{-}.
