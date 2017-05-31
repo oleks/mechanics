@@ -39,7 +39,7 @@ instance Pretty Expr where
   pPrint (ExpVal v) = double v
   pPrint (FnCall n v) = text n <+> (hsep $ map pPrint v)
   pPrint (ExpNeg e) = char '~' <> pPrint e
-  pPrint (ExpTup es) = hsep $ punctuate (text ",") (map pPrint es)
+  pPrint (ExpTup es) = parens $ hsep $ punctuate (text ",") (map pPrint es)
   pPrint (ExpAdd e1 e2) = binop e1 "+" e2
   pPrint (ExpSub e1 e2) = binop e1 "-" e2
   pPrint (ExpMul e1 e2) = binop e1 "*" e2
