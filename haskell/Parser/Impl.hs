@@ -1,77 +1,83 @@
 module Parser.Impl where
 
 import Ast
+import Data.Char ( ord )
 import Control.Monad ( void )
 import Text.ParserCombinators.Parsec hiding ( parse, Parser )
-import Text.Parsec.Prim ( runP )
+import qualified Text.ParserCombinators.Parsec as P
 
-data ParamParsers
-  = ParamParsers
-  { formal :: Parser [Name]
-  , actual :: Parser [Expr]
-  }
-
-data ParserState
-  = ParserState {
-    params :: ParamParsers
-  }
-
-type Parser = GenParser Char ParserState
+type Parser = GenParser Char ()
 
 keywords :: [String]
-keywords = []
+keywords = ["let", "in", "if", "then", "else"]
 
-parseName :: Parser Name
-parseName = do
+ptoken :: Parser a -> Parser a
+ptoken = flip (<*) spaces
+
+ctoken :: Char -> Parser ()
+ctoken c = void $ ptoken $ char c
+
+pValue :: Parser Value
+pValue = ptoken (pZero <|> pNonZero)
+  where
+    pZero :: Parser Value
+    pZero = char '0' *> pure 0.0
+
+    step :: (Double, Double) -> Char -> (Double, Double)
+    step (acc, scale) c =
+      (acc + fromIntegral (ord c - ord '0') * scale, scale * 10.0)
+
+    pNonZero :: Parser Value
+    pNonZero = do
+      c <- oneOf ['1'..'9']
+      cs <- many $ oneOf ['0'..'9']
+      let (n, _) = foldl step (0.0, 1.0) (c:cs)
+      pure n
+
+pName :: Parser Name
+pName = ptoken (do
   c <- oneOf ['a'..'z']
   cs <- many $ oneOf $ ['a'..'z'] ++ ['0'..'9']
   let name = c:cs
   if name `elem` keywords
   then unexpected $ name ++ ": it is a reserved keyword"
-  else pure $ Name name
+  else pure $ name) <?> "name"
 
-token' :: Parser a -> Parser a
-token' = (*>) spaces
+pExpr0 :: Parser Expr
+pExpr0 = choice [
+    fmap ExpNam pName,
+    fmap ExpVal pValue
+  ]
 
-ctoken :: Char -> Parser ()
-ctoken = void . token' . char
+pExpr1 :: Parser Expr
+pExpr1 = chainl1 pExpr0 op
+  where
+    op :: Parser (Expr -> Expr -> Expr)
+    op = choice [
+        ctoken '*' >> return ExpMul,
+        ctoken '/' >> return ExpDiv
+      ]
 
-parseCurried :: Parser a -> Parser [a]
-parseCurried = flip sepBy space
+pExpr2 :: Parser Expr
+pExpr2 = chainl1 pExpr1 op
+  where
+    op :: Parser (Expr -> Expr -> Expr)
+    op = choice [
+        ctoken '+' >> return ExpAdd,
+        ctoken '-' >> return ExpSub
+      ]
 
-parens :: Parser a -> Parser a
-parens = between (ctoken '(') (ctoken ')')
+pExpr :: Parser Expr
+pExpr = pExpr2
 
-parseUncurried :: Parser a -> Parser [a]
-parseUncurried = parens . flip sepBy (ctoken ',')
+parse :: Parser a -> String -> Either ParseError a
+parse p s = P.parse p "" s
 
-parseParams :: Parser [Name]
-parseParams = do
-  p <- fmap (formal . params) getState
-  p
+fullParse :: Parser a -> String -> Either ParseError a
+fullParse p s = P.parse (spaces >> p <* (ptoken eof)) "" s
 
-parseNumeral :: Parser Expr
-parseNumeral = do
-  c <- oneOf ['1'..'9']
-  cs <- many $ oneOf ['0'..'9']
-  let number = read $ c:cs
-  pure $ Num number
+parseString :: String -> Either ParseError Expr
+parseString = fullParse pExpr
 
-parseExpr :: Parser Expr
-parseExpr = parseNumeral
-
-parse :: Parser a -> ParserState ->
-  SourceName -> String -> Either ParseError a
-parse p st = runP p st
-
-curriedState = ParserState
-  (ParamParsers
-    (parseCurried parseName)
-    (parseCurried parseExpr)
-  )
-
-uncurriedState = ParserState
-  (ParamParsers
-    (parseUncurried parseName)
-    (parseUncurried parseExpr)
-  )
+parseFile :: FilePath -> IO (Either ParseError Expr)
+parseFile path = fmap parseString (readFile path)
