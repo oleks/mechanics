@@ -1,7 +1,7 @@
-module Main (main) where
+module HLint ( tests ) where
 
-import Language.Haskell.HLint (hlint)
-import System.Exit (exitFailure, exitSuccess)
+import Language.Haskell.HLint ( hlint )
+import Distribution.TestSuite
 
 arguments :: [String]
 arguments =
@@ -9,7 +9,22 @@ arguments =
     , "tests"
     ]
 
-main :: IO ()
-main = do
-    hints <- hlint arguments
-    if null hints then exitSuccess else exitFailure
+tests :: IO [Test]
+tests = do
+  hints <- hlint arguments
+  return $ if null hints then [ Test succeeds ] else [ Test fails ]
+  where
+    succeeds = TestInstance
+        { run = return $ Finished Pass
+        , name = "succeeds"
+        , tags = []
+        , options = []
+        , setOption = \_ _ -> Right succeeds
+        }
+    fails = TestInstance
+        { run = return $ Finished $ Fail "Always fails!"
+        , name = "fails"
+        , tags = []
+        , options = []
+        , setOption = \_ _ -> Right fails
+        }
