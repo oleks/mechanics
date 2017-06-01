@@ -41,7 +41,7 @@ pName = ptoken (do
   let name = c:cs
   if name `elem` keywords
   then unexpected $ name ++ ": it is a reserved keyword"
-  else pure $ name) <?> "name"
+  else pure name) <?> "name"
 
 pExpr0 :: Parser Expr
 pExpr0 = choice [
@@ -71,10 +71,10 @@ pExpr :: Parser Expr
 pExpr = pExpr2
 
 parse :: Parser a -> String -> Either ParseError a
-parse p s = P.parse p "" s
+parse p = P.parse p ""
 
 fullParse :: Parser a -> String -> Either ParseError a
-fullParse p s = P.parse (spaces >> p <* (ptoken eof)) "" s
+fullParse p = parse (spaces >> p <* ptoken eof)
 
 parseString :: String -> Either ParseError Expr
 parseString = fullParse pExpr
